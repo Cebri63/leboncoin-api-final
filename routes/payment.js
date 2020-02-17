@@ -14,7 +14,7 @@ router.post("/payment", async (req, res) => {
     let { status } = await stripe.charges.create({
       amount: req.fields.amount,
       currency: "eur",
-      description: `Paiement leboncoin pour : ${req.fields.title}`,
+      description: `Paiement leboncoin pour : ${req.fields.title}. Id du produit ${req.fields.productId}`,
       source: req.fields.token
     });
     // Le paiement a fonctionné

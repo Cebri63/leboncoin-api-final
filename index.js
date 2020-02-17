@@ -31,6 +31,6 @@ app.all("*", function(req, res) {
   res.status(404).json({ error: "Not Found" });
 });
 
-app.listen(3001, () => {
+app.listen(process.env.PORT, () => {
   console.log("leboncoin API running");
 });

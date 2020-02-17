@@ -17,7 +17,7 @@ const Offer = mongoose.model("Offer", {
     max: 100000
   },
   picture: {
-    type: Array
+    type: Object
   },
   created: {
     type: Date,

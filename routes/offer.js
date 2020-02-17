@@ -71,6 +71,8 @@ const createFilters = req => {
 };
 
 router.get("/offer/with-count", async (req, res) => {
+  console.log(req.query);
+
   try {
     const filters = createFilters(req);
     const search = Offer.find(filters);

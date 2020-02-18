@@ -89,10 +89,12 @@ router.get("/offer/with-count", async (req, res) => {
       const limit = 4;
       search.limit(limit).skip(limit * (page - 1));
     }
-    const offers = await search.populate({
-      path: "creator",
-      select: "account"
-    });
+    const offers = await search
+      .populate({
+        path: "creator",
+        select: "account"
+      })
+      .sort({ created: -1 });
     console.log(offers);
     res.json({ count: offers.length, offers: offers });
   } catch (error) {

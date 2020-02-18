@@ -71,8 +71,6 @@ const createFilters = req => {
 };
 
 router.get("/offer/with-count", async (req, res) => {
-  console.log(req.query);
-
   try {
     const filters = createFilters(req);
     const search = Offer.find(filters);
@@ -95,6 +93,7 @@ router.get("/offer/with-count", async (req, res) => {
       path: "creator",
       select: "account"
     });
+    console.log(offers);
     res.json({ count: offers.length, offers: offers });
   } catch (error) {
     res.json({ message: error.message });

@@ -14,37 +14,55 @@ cloudinary.config({
 
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
-    cloudinary.v2.uploader.upload(
-      req.files.file.path,
-      async (error, result) => {
-        if (error) {
-          return res.json({ error: error.message });
-        } else {
-          const obj = {
-            title: req.fields.title,
-            description: req.fields.description,
-            price: req.fields.price,
-            picture: result,
-            creator: req.user
-          };
-          const offer = new Offer(obj);
-          await offer.save();
+    if (req.files.file.path) {
+      cloudinary.v2.uploader.upload(
+        req.files.file.path,
+        async (error, result) => {
+          if (error) {
+            return res.json({ error: error.message });
+          } else {
+            const obj = {
+              title: req.fields.title,
+              description: req.fields.description,
+              price: req.fields.price,
+              picture: result,
+              creator: req.user
+            };
+            const offer = new Offer(obj);
+            await offer.save();
 
-          res.json({
-            _id: offer._id,
-            title: offer.title,
-            description: offer.description,
-            price: offer.price,
-            picture: offer.picture,
-            created: offer.created,
-            creator: {
-              account: offer.creator.account,
-              _id: offer.creator._id
-            }
-          });
+            res.json({
+              _id: offer._id,
+              title: offer.title,
+              description: offer.description,
+              price: offer.price,
+              picture: offer.picture,
+              created: offer.created,
+              creator: {
+                account: offer.creator.account,
+                _id: offer.creator._id
+              }
+            });
+          }
         }
-      }
-    );
+      );
+    } else {
+      const offer = new Offer(obj);
+      await offer.save();
+
+      res.json({
+        _id: offer._id,
+        title: offer.title,
+        description: offer.description,
+        price: offer.price,
+        picture: offer.picture,
+        created: offer.created,
+        creator: {
+          account: offer.creator.account,
+          _id: offer.creator._id
+        }
+      });
+    }
   } catch (error) {
     res.json({ message: error.message });
   }

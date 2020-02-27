@@ -98,6 +98,7 @@ router.get("/offer/with-count", async (req, res) => {
   try {
     const filters = createFilters(req);
     const search = Offer.find(filters);
+    const count = (await Offer.find()).length;
 
     if (req.query.sort === "price-asc") {
       // Ici, nous continuons de construire notre recherche
@@ -120,7 +121,7 @@ router.get("/offer/with-count", async (req, res) => {
       })
       .sort({ created: -1 });
     console.log(offers);
-    res.json({ count: offers.length, offers: offers });
+    res.json({ count: count, offers: offers });
   } catch (error) {
     res.json({ message: error.message });
   }

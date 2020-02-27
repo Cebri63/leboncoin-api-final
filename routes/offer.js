@@ -110,7 +110,8 @@ router.get("/offer/with-count", async (req, res) => {
     // skip : Ignorer les X premiers
 
     const limit = Number(req.query.limit);
-    search.limit(limit).skip(limit * (page - 1));
+    const skip = Number(req.query.skip);
+    search.limit(limit).skip(skip);
 
     const offers = await search
       .populate({

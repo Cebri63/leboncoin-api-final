@@ -14,6 +14,8 @@ cloudinary.config({
 
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
+    console.log(req.files);
+
     if (req.files) {
       cloudinary.v2.uploader.upload(
         req.files.file.path,
@@ -47,6 +49,12 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
         }
       );
     } else {
+      const obj = {
+        title: req.fields.title,
+        description: req.fields.description,
+        price: req.fields.price,
+        creator: req.user
+      };
       const offer = new Offer(obj);
       await offer.save();
 

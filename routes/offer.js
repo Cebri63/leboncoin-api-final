@@ -111,7 +111,7 @@ router.get("/offer/with-count", async (req, res) => {
     if (req.query.page) {
       const page = req.query.page;
       const limit = req.query.limit;
-      search.limit(limit).skip(limit * (page - 1));
+      search.limit(3).skip(3 * (page - 1));
     }
     const offers = await search
       .populate({

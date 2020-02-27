@@ -14,7 +14,7 @@ cloudinary.config({
 
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
-    if (req.files.file.path) {
+    if (req.files) {
       cloudinary.v2.uploader.upload(
         req.files.file.path,
         async (error, result) => {

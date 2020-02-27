@@ -16,7 +16,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
     console.log(req.files);
 
-    if (req.files) {
+    if (Object.keys(req.files) > 0) {
       cloudinary.v2.uploader.upload(
         req.files.file.path,
         async (error, result) => {

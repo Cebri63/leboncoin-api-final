@@ -14,8 +14,6 @@ cloudinary.config({
 
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
-    console.log(req.files);
-
     if (Object.keys(req.files) > 0) {
       cloudinary.v2.uploader.upload(
         req.files.file.path,
@@ -112,7 +110,7 @@ router.get("/offer/with-count", async (req, res) => {
     // skip : Ignorer les X premiers
     if (req.query.page) {
       const page = req.query.page;
-      const limit = 4;
+      const limit = req.query.limit;
       search.limit(limit).skip(limit * (page - 1));
     }
     const offers = await search

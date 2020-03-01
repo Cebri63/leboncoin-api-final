@@ -13,12 +13,8 @@ cloudinary.config({
 });
 
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
-  console.log(req.files);
-
   try {
     if (Object.keys(req.files).length > 0) {
-      console.log("coucou");
-
       cloudinary.v2.uploader.upload(
         req.files.file.path,
         async (error, result) => {
@@ -34,7 +30,6 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
             };
             const offer = new Offer(obj);
             await offer.save();
-            console.log(offer);
 
             res.json({
               _id: offer._id,

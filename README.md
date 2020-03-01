@@ -1,6 +1,9 @@
 # leboncoin-api-final
 
-An [express](https://expressjs.com/) server for leboncoin clone.
+An [express](https://expressjs.com/) server for leboncoin clone.  
+
+This project is hosted on Heroku : https://leboncoin-api-final.herokuapp.com/
+It's used on the following frontend project : https://github.com/Cebri63/leboncoin-2003
 
 ## Routes
 

@@ -12,7 +12,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-router.post("/offer/publish", isAuthenticated, async (req, res) => {
+// CREATE
+router.put("/offer/publish", isAuthenticated, async (req, res) => {
   try {
     if (Object.keys(req.files).length > 0) {
       cloudinary.v2.uploader.upload(
@@ -94,6 +95,7 @@ const createFilters = req => {
   return filters;
 };
 
+// READ
 router.get("/offer/with-count", async (req, res) => {
   try {
     const filters = createFilters(req);

@@ -9,7 +9,7 @@ router.use(formidableMiddleware());
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // CREATE
@@ -27,7 +27,7 @@ router.put("/offer/publish", isAuthenticated, async (req, res) => {
               description: req.fields.description,
               price: req.fields.price,
               picture: result,
-              creator: req.user
+              creator: req.user,
             };
             const offer = new Offer(obj);
             await offer.save();
@@ -41,8 +41,8 @@ router.put("/offer/publish", isAuthenticated, async (req, res) => {
               created: offer.created,
               creator: {
                 account: offer.creator.account,
-                _id: offer.creator._id
-              }
+                _id: offer.creator._id,
+              },
             });
           }
         }
@@ -52,7 +52,7 @@ router.put("/offer/publish", isAuthenticated, async (req, res) => {
         title: req.fields.title,
         description: req.fields.description,
         price: req.fields.price,
-        creator: req.user
+        creator: req.user,
       };
       const offer = new Offer(obj);
       await offer.save();
@@ -66,8 +66,8 @@ router.put("/offer/publish", isAuthenticated, async (req, res) => {
         created: offer.created,
         creator: {
           account: offer.creator.account,
-          _id: offer.creator._id
-        }
+          _id: offer.creator._id,
+        },
       });
     }
   } catch (error) {
@@ -76,7 +76,7 @@ router.put("/offer/publish", isAuthenticated, async (req, res) => {
 });
 
 // fonction qui va construire un objet de filtres, que l'on enverra ensuite dans le find()
-const createFilters = req => {
+const createFilters = (req) => {
   const filters = {};
   if (req.query.priceMin) {
     filters.price = {};
@@ -100,7 +100,7 @@ router.get("/offer/with-count", async (req, res) => {
   try {
     const filters = createFilters(req);
     const search = Offer.find(filters);
-    const count = (await Offer.find()).length;
+    const count = await Offer.countDocuments(filters);
 
     if (req.query.sort === "price-asc") {
       // Ici, nous continuons de construire notre recherche
@@ -119,7 +119,7 @@ router.get("/offer/with-count", async (req, res) => {
     const offers = await search
       .populate({
         path: "creator",
-        select: "account"
+        select: "account",
       })
       .sort({ created: -1 });
     console.log(offers);
@@ -134,7 +134,7 @@ router.get("/offer/:id", async (req, res) => {
     const id = req.params.id;
     const offer = await Offer.findOne({ _id: id }).populate({
       path: "creator",
-      select: "account"
+      select: "account",
     });
     res.json(offer);
   } catch (error) {

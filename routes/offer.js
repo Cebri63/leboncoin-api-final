@@ -75,57 +75,77 @@ router.put("/offer/publish", isAuthenticated, async (req, res) => {
   }
 });
 
-// fonction qui va construire un objet de filtres, que l'on enverra ensuite dans le find()
-const createFilters = (req) => {
-  const filters = {};
-  if (req.query.priceMin) {
-    filters.price = {};
-    filters.price.$gte = req.query.priceMin;
-  }
-  if (req.query.priceMax) {
-    if (filters.price === undefined) {
-      filters.price = {};
-    }
-    filters.price.$lte = req.query.priceMax;
-  }
-
-  if (req.query.title) {
-    filters.title = new RegExp(req.query.title, "i");
-  }
-  return filters;
-};
-
 // READ
 router.get("/offer/with-count", async (req, res) => {
   try {
-    const filters = createFilters(req);
-    const search = Offer.find(filters);
-    const count = await Offer.countDocuments(filters);
-
-    if (req.query.sort === "price-asc") {
-      // Ici, nous continuons de construire notre recherche
-      search.sort({ price: 1 });
-    } else if (req.query.sort === "price-desc") {
-      // Ici, nous continuons de construire notre recherche
-      search.sort({ price: -1 });
+    const filters = {};
+    if (req.query.title) {
+      filters.title = new RegExp(req.query.title, "i");
     }
-    // limit : le nombre de résultats affichés
-    // skip : Ignorer les X premiers
-
-    const limit = Number(req.query.limit);
-    const skip = Number(req.query.skip);
-    search.limit(limit).skip(skip);
-
-    const offers = await search
+    // OK cas avec que priceMin
+    // OK cas avec que priceMax
+    // OK cas avec priceMin et priceMax
+    if (req.query.priceMin) {
+      filters.price = {
+        $gte: req.query.priceMin,
+      };
+    }
+    if (req.query.priceMax) {
+      // filters.price = {
+      //   $lte: req.query.priceMax,
+      // };
+      if (!filters.price) {
+        filters.price = {};
+      }
+      filters.price.$lte = req.query.priceMax;
+    }
+    // if (req.query.priceMin && req.query.priceMax) {
+    //   filters.price = {
+    //     $gte: req.query.priceMin,
+    //     $lte: req.query.priceMax,
+    //   };
+    // }
+    let sort = {};
+    if (req.query.sort === "date-desc") {
+      sort = { date: "desc" };
+    } else if (req.query.sort === "date-asc") {
+      sort = { date: "asc" };
+    } else if (req.query.sort === "price-asc") {
+      sort = { price: "asc" };
+    } else if (req.query.sort === "price-desc") {
+      sort = { price: "desc" };
+    }
+    // Compter le nombre de résultat
+    const count = await Offer.countDocuments(filters);
+    let offers;
+    // Récupérer des annonces
+    let page = Number(req.query.page);
+    if (!page) {
+      // Forcer à afficher la première page
+      page = 1;
+    }
+    let limit = 2;
+    // On affiche 2 resultats par page
+    // Si on me demande page 1, alors le skip est 0 et limit est 2
+    // Si on me demande page 2, alors le skip est 2 et limit est 2
+    // Si on me demande page 3, alors le skip est 4 et limit est 2
+    console.log(filters);
+    offers = await Offer.find(filters)
+      .select("title price created creator picture.secure_url description")
       .populate({
         path: "creator",
-        select: "account",
+        select: "account.username account.phone",
       })
-      .sort({ created: -1 });
-    console.log(offers);
-    res.json({ count: count, offers: offers });
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort(sort);
+    // Répondre au client
+    return res.json({
+      count: count,
+      offers: offers,
+    });
   } catch (error) {
-    res.json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 });
 
